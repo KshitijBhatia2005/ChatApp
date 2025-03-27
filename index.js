@@ -5,9 +5,6 @@ const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-
-app.use(cors()); // Enable CORS
-
 const io = socketIo(server, {
   cors: {
     origin: "*",
@@ -15,14 +12,17 @@ const io = socketIo(server, {
   }
 });
 
-const PORT = process.env.PORT || 10000; // Change port to test
+// Serve static files from the public folder
+app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-  res.send("Chat App is running!");
-});
+const PORT = process.env.PORT || 10000; 
 
 io.on("connection", (socket) => {
   console.log("A user connected");
+
+  socket.on("chatMessage", (msg) => {
+    io.emit("chatMessage", msg); // Broadcast message to all users
+  });
 
   socket.on("disconnect", () => {
     console.log("User disconnected");
