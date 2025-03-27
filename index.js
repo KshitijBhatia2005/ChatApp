@@ -1,12 +1,21 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
 
-const PORT = process.env.PORT || 3000; // ✅ Ensure it works on Render
+app.use(cors()); // Enable CORS
+
+const io = socketIo(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+const PORT = process.env.PORT || 10000; // Change port to test
 
 app.get("/", (req, res) => {
   res.send("Chat App is running!");
